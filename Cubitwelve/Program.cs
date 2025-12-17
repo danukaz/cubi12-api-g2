@@ -41,6 +41,8 @@ builder.Services.AddOutputCache(options =>
     options.AddBasePolicy(builder => builder.Cache());
 });
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var app = builder.Build();
 app.UseOutputCache();
 

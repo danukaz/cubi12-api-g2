@@ -37,6 +37,12 @@ Follow these steps to get the project up and running on your local machine:
 
 4. Inside the folder Cubitwelve create a file and call it .env then fill with the following example values.
     ```bash
+    # PostgreSQL
+    POSTGRES_USER=postgres
+    POSTGRES_PASSWORD=postgres
+    POSTGRES_DB=cubi12
+
+    # Backend
     DB_CONNECTION=Host=localhost;Port=5432;Database=cubi12;Username=postgres;Password=postgres;
     JWT_SECRET=your_jwt_secret_here
     ```
