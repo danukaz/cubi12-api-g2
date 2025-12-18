@@ -2,32 +2,18 @@ using Cubitwelve.Src.Extensions;
 using Cubitwelve.Src.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
-var localAllowSpecificOrigins = "_localAllowSpecificOrigins";
-var deployedAllowSpecificOrigins = "_deployedAllowSpecificOrigins";
+//var localAllowSpecificOrigins = "_localAllowSpecificOrigins";
+//var deployedAllowSpecificOrigins = "_deployedAllowSpecificOrigins";
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: localAllowSpecificOrigins,
-                      policy =>
-                      {
-                          policy.AllowAnyHeader()
-                                .AllowAnyMethod()
-                                .AllowCredentials()
-                                .WithOrigins("http://localhost:3000",
-                                            "http://localhost:8100",
-                                            "http://localhost");
-                      });
-    options.AddPolicy(name: deployedAllowSpecificOrigins,
-                      policy =>
-                      {
-                          policy.AllowAnyHeader()
-                                .AllowAnyMethod()
-                                .AllowCredentials()
-                                .WithOrigins("https://cubi12.azurewebsites.net",
-                                            "https://cubi12.cl",
-                                            "https://www.cubi12.cl"
-                                            );
-                      });
+    options.AddPolicy(name: "AllowAll",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
 });
 
 // Add services to the container.
@@ -54,12 +40,10 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.UseCors(localAllowSpecificOrigins);
 }
-else
-{
-    app.UseCors(deployedAllowSpecificOrigins);
-}
+
+app.UseCors("AllowAll");
+
 
 app.UseAuthentication();
 app.UseAuthorization();
