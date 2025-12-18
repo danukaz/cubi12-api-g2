@@ -66,6 +66,8 @@ app.UseAuthorization();
 
 // app.UseIsUserEnabled();
 
+app.MapHealthChecks("/health");
+
 app.UseHttpsRedirection();
 
 app.MapControllers();

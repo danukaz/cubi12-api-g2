@@ -2,24 +2,44 @@
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
 WORKDIR /App
 
-# Copy the entire content of the current directory to the container
-COPY . ./
+# Copy only project files first for better layer caching
+COPY *.csproj ./
+RUN dotnet restore
 
-# Restore dependencies as distinct layers
-RUN dotnet restore && dotnet publish -c Release -o out
+# Copy the rest of the application code
+COPY . ./
+RUN dotnet publish -c Release -o out
 
 # Stage 2: Runtime environment with only runtime dependencies
 FROM mcr.microsoft.com/dotnet/aspnet:7.0
 WORKDIR /App
 
+# Install curl for healthcheck
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
+# Create a non-root user for security
+RUN addgroup --system --gid 1001 appgroup && \
+    adduser --system --uid 1001 --ingroup appgroup appuser
+
 # Copy the published output from the build environment
 COPY --from=build-env /App/out .
 
-# Set environment variables for the ASP.NET Core app
-ENV ASPNETCORE_URLS=http://+:80
+# Change ownership to non-root user
+RUN chown -R appuser:appgroup /App
 
-# Expose port 80 for the application
-EXPOSE 80
+# Switch to non-root user
+USER appuser
+
+# Render inyecta automáticamente la variable PORT
+ENV ASPNETCORE_URLS=http://+:${PORT}
+ENV ASPNETCORE_ENVIRONMENT=Production
+
+# Expose default port for documentation
+EXPOSE 8080
+
+# Healthcheck usando la variable PORT de Render
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:${PORT}/health || exit 1
 
 # Specify the entry point for the application
 ENTRYPOINT ["dotnet", "Cubitwelve.dll"]

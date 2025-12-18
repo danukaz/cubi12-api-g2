@@ -25,6 +25,7 @@ namespace Cubitwelve.Src.Extensions
             AddUnitOfWork(services);
             AddAuthentication(services, config);
             AddHttpContextAccesor(services);
+            AddHealthChecks(services);
         }
 
         private static void InitEnvironmentVariables()
@@ -99,6 +100,11 @@ namespace Cubitwelve.Src.Extensions
         private static void AddHttpContextAccesor(IServiceCollection services)
         {
             services.AddHttpContextAccessor();
+        }
+
+        private static void AddHealthChecks(IServiceCollection services)
+        {
+            services.AddHealthChecks();
         }
 
 
