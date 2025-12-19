@@ -5,6 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 var localAllowSpecificOrigins = "_localAllowSpecificOrigins";
 var deployedAllowSpecificOrigins = "_deployedAllowSpecificOrigins";
 
+//CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: localAllowSpecificOrigins,
